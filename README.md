@@ -4,6 +4,7 @@
 
 This project test the below go serializers, which compares with go standard _json_ and _xml_.
 
+- [skycoin/src/cipher/encoder](https://github.com/skycoin/skycoin/tree/develop/src/cipher/encoder)
 - [encoding/json](http://golang.org/pkg/encoding/json/)
 - [encoding/xml](http://golang.org/pkg/encoding/xml/)
 - [github.com/tinylib/msgp](http://github.com/tinylib/msgp)
