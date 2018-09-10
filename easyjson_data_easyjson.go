@@ -17,7 +17,7 @@ var (
 	_ easyjson.Marshaler
 )
 
-func easyjsonB0025f81DecodeGithubComLritaGosercomp(in *jlexer.Lexer, out *EColorGroup) {
+func easyjsonB0025f81DecodeGithubComSmallnestGosercomp(in *jlexer.Lexer, out *EColorGroup) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -73,38 +73,50 @@ func easyjsonB0025f81DecodeGithubComLritaGosercomp(in *jlexer.Lexer, out *EColor
 		in.Consumed()
 	}
 }
-func easyjsonB0025f81EncodeGithubComLritaGosercomp(out *jwriter.Writer, in EColorGroup) {
+func easyjsonB0025f81EncodeGithubComSmallnestGosercomp(out *jwriter.Writer, in EColorGroup) {
 	out.RawByte('{')
 	first := true
 	_ = first
-	if !first {
-		out.RawByte(',')
-	}
-	first = false
-	out.RawString("\"id\":")
-	out.Int(int(in.Id))
-	if !first {
-		out.RawByte(',')
-	}
-	first = false
-	out.RawString("\"name\":")
-	out.String(string(in.Name))
-	if !first {
-		out.RawByte(',')
-	}
-	first = false
-	out.RawString("\"colors\":")
-	if in.Colors == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
-		out.RawString("null")
-	} else {
-		out.RawByte('[')
-		for v2, v3 := range in.Colors {
-			if v2 > 0 {
-				out.RawByte(',')
-			}
-			out.String(string(v3))
+	{
+		const prefix string = ",\"id\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
 		}
-		out.RawByte(']')
+		out.Int(int(in.Id))
+	}
+	{
+		const prefix string = ",\"name\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.Name))
+	}
+	{
+		const prefix string = ",\"colors\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		if in.Colors == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
+			out.RawString("null")
+		} else {
+			out.RawByte('[')
+			for v2, v3 := range in.Colors {
+				if v2 > 0 {
+					out.RawByte(',')
+				}
+				out.String(string(v3))
+			}
+			out.RawByte(']')
+		}
 	}
 	out.RawByte('}')
 }
@@ -112,23 +124,23 @@ func easyjsonB0025f81EncodeGithubComLritaGosercomp(out *jwriter.Writer, in EColo
 // MarshalJSON supports json.Marshaler interface
 func (v EColorGroup) MarshalJSON() ([]byte, error) {
 	w := jwriter.Writer{}
-	easyjsonB0025f81EncodeGithubComLritaGosercomp(&w, v)
+	easyjsonB0025f81EncodeGithubComSmallnestGosercomp(&w, v)
 	return w.Buffer.BuildBytes(), w.Error
 }
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
 func (v EColorGroup) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonB0025f81EncodeGithubComLritaGosercomp(w, v)
+	easyjsonB0025f81EncodeGithubComSmallnestGosercomp(w, v)
 }
 
 // UnmarshalJSON supports json.Unmarshaler interface
 func (v *EColorGroup) UnmarshalJSON(data []byte) error {
 	r := jlexer.Lexer{Data: data}
-	easyjsonB0025f81DecodeGithubComLritaGosercomp(&r, v)
+	easyjsonB0025f81DecodeGithubComSmallnestGosercomp(&r, v)
 	return r.Error()
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *EColorGroup) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonB0025f81DecodeGithubComLritaGosercomp(l, v)
+	easyjsonB0025f81DecodeGithubComSmallnestGosercomp(l, v)
 }

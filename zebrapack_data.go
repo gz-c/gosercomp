@@ -1,6 +1,6 @@
 package gosercomp
 
-//go:generate zebrapack -fast-strings -no-rtti
+//go:generate zebrapack -fast-strings
 type ZColorGroup struct {
 	Id     int      `json:"id" xml:"id,attr" msg:"id" zid:"0"`
 	Name   string   `json:"name" xml:"name" msg:"name" zid:"1"`

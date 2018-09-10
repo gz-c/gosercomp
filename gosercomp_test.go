@@ -16,9 +16,11 @@ import (
 	flatbuffers "github.com/google/flatbuffers/go"
 	hprose "github.com/hprose/hprose-golang/io"
 	jsoniter "github.com/json-iterator/go"
-	"github.com/linkedin/goavro"
+	goavro "github.com/linkedin/goavro"
+	"github.com/skycoin/skycoin/src/cipher/encoder"
 	"github.com/tidwall/gjson"
 	"github.com/ugorji/go/codec"
+
 	//vitessbson "github.com/youtube/vitess/go/bson"
 
 	"github.com/Sereal/Sereal/Go/sereal"
@@ -83,6 +85,12 @@ var avroSchema = `{"namespace": "gosercomp",
 	 {"name": "colors", "type": {"type": "array", "items": "string"}}
 ]
 }`
+
+var skyGroup = SkyGroup{
+	Id:     1,
+	Name:   "Reds",
+	Colors: []string{"Crimson", "Red", "Ruby", "Maroon"},
+}
 
 func TestMarshaledDataLen(t *testing.T) {
 	log.SetFlags(log.LstdFlags)
@@ -170,6 +178,9 @@ func TestMarshaledDataLen(t *testing.T) {
 
 	l, _ := colferGroup.MarshalLen()
 	t.Logf("colfer:\t\t\t\t %d bytes", l)
+
+	skyBytes := encoder.Serialize(&skyGroup)
+	t.Logf("sky:\t\t\t\t %d bytes", len(skyBytes))
 
 	buf, _ = zgroup.MarshalMsg(buf[:0])
 	t.Logf("zebrapack:\t\t\t %d bytes", len(buf))
@@ -685,6 +696,23 @@ func BenchmarkUnmarshalByGoMemdump(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		memdump.Decode(bytes.NewReader(objectBytes), &result)
+	}
+}
+
+func BenchmarkMarshalBySky(b *testing.B) {
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		encoder.Serialize(&skyGroup)
+	}
+}
+
+func BenchmarkUnmarshalBySky(b *testing.B) {
+	skyBytes := encoder.Serialize(skyGroup)
+	result := &SkyGroup{}
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		encoder.DeserializeRaw(skyBytes, result)
 	}
 }
 
