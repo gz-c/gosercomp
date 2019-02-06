@@ -182,10 +182,14 @@ func TestMarshaledDataLen(t *testing.T) {
 	skyBytes := encoder.Serialize(&skyGroup)
 	t.Logf("sky:\t\t\t\t %d bytes", len(skyBytes))
 
+	skyEncN := EncodeSizeSkyGroup(&skyGroup)
+	t.Logf("skyencoder:\t\t\t\t %d bytes", skyEncN)
+
 	buf, _ = zgroup.MarshalMsg(buf[:0])
 	t.Logf("zebrapack:\t\t\t %d bytes", len(buf))
 
-	buf = gotiny.Encodes(&group)
+	gotinyEnc := gotiny.NewEncoder(group)
+	buf = gotinyEnc.Encode(&group)
 	t.Logf("gotiny:\t\t\t\t %d bytes", len(buf))
 
 	writer := hprose.NewWriter(true)
@@ -200,6 +204,7 @@ func TestMarshaledDataLen(t *testing.T) {
 	buf, _ = msgpackv2.Marshal(&group)
 	t.Logf("msgpackv2:\t\t\t %d bytes", len(buf))
 }
+
 func BenchmarkMarshalByJson(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		json.Marshal(group)
@@ -716,6 +721,40 @@ func BenchmarkUnmarshalBySky(b *testing.B) {
 	}
 }
 
+func BenchmarkMarshalBySkyencoder(b *testing.B) {
+	n := EncodeSizeSkyGroup(&skyGroup)
+	buf := make([]byte, n)
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		EncodeSkyGroup(buf, &skyGroup)
+	}
+}
+
+func BenchmarkMarshalBySkyencoderWithAlloc(b *testing.B) {
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		n := EncodeSizeSkyGroup(&skyGroup)
+		buf := make([]byte, n)
+		EncodeSkyGroup(buf, &skyGroup)
+	}
+}
+
+func BenchmarkUnmarshalBySkyencoder(b *testing.B) {
+	n := EncodeSizeSkyGroup(&skyGroup)
+	buf := make([]byte, n)
+	err := EncodeSkyGroup(buf, &skyGroup)
+	if err != nil {
+		b.Fatal(err)
+	}
+	result := &SkyGroup{}
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		DecodeSkyGroup(buf, result)
+	}
+}
+
 func BenchmarkMarshalByColfer(b *testing.B) {
 	l, _ := colferGroup.MarshalLen()
 	buf := make([]byte, l)
@@ -758,22 +797,26 @@ func BenchmarkUnmarshalByZebrapack(b *testing.B) {
 }
 
 func BenchmarkMarshalByGotiny(b *testing.B) {
+	enc := gotiny.NewEncoder(group)
+
 	var bytes []byte
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		bytes = gotiny.Encodes(&group)
+		bytes = enc.Encode(&group)
 	}
 
 	_ = bytes
 }
 
 func BenchmarkUnmarshalByGotiny(b *testing.B) {
-	bytes := gotiny.Encodes(&group)
+	enc := gotiny.NewEncoder(group)
+	dec := gotiny.NewDecoder(group)
+	bytes := enc.Encode(&group)
 	v := &ColorGroup{}
 	//b.SetBytes(int64(len(bts)))
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		gotiny.Decodes(bytes, v)
+		dec.Decode(bytes, v)
 	}
 }
 
